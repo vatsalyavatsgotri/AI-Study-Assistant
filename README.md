@@ -54,9 +54,7 @@ main.py
 README.md
 requirements.txt
 sample_notes.txt
-history.txt
-report.md
-.env
+.gitignore
 
 ---
 
@@ -74,3 +72,10 @@ Future Improvements
 Author
 
 Developed by Vatsalya
+
+GitHub:
+https://github.com/vatsalyavatsgotri
+
+---
+
+⭐ If you found this project useful, please consider giving it a star on GitHub.
