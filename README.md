@@ -1,152 +1,316 @@
 # AI Study Assistant
 
-## Project Overview
+An AI-powered web-based study companion that brings learning, revision,
+coding help, and study utilities into one workspace.
 
-AI Study Assistant is a student study workspace with a React web frontend and a Python FastAPI backend. The backend sends study and coding requests to Google Gemini and returns responses to the frontend. The Gemini API key stays on the server.
+The project has evolved from a Python-based AI study assistant into a
+React + FastAPI web application. The web interface uses AI Chat as the
+main page and provides dedicated study tools through the sidebar.
 
-## Key Features
+## Features
 
-- **AI Chat:** Ask questions and continue a conversation with recent message history.
-- **Explain Code:** Get line-by-line explanations for submitted code.
-- **Debug Errors:** Submit an error message and request an explanation and fix.
-- **Generate Code:** Describe a coding task and choose a language.
-- **Notes Summary:** Summarize notes, identify key points, and get revision suggestions.
-- **Quiz Generator:** Generate multiple-choice questions from notes.
-- **Flashcards:** Generate question-and-answer cards from notes.
-- **Study Planner:** Request a day-by-day plan for a subject and study schedule.
-- **Weak Topic Analysis:** Analyze notes for topics to review and practice suggestions.
-- **Interview Questions:** Generate interview questions, answers, and tips for a subject.
-- **File Analyzer:** Upload UTF-8 text files (`.txt`, `.py`, `.md`, `.csv`) for AI analysis. The current upload limit is 2 MB.
-- **Study Analytics:** View the study activity and subject-progress dashboard provided by the frontend.
+### AI Chat
 
-AI-powered features require a running backend configured with a valid Gemini API key. Notes, planner tasks, and analytics are not connected to persistent storage in the current project.
+-   Ask academic questions and doubts
+-   Get AI-powered explanations
+-   Start new conversations
+-   Use quick study actions from the chat interface
 
-## Tech Stack
+### Study Tools
 
-- React
-- Vite
-- Tailwind CSS
-- React Router
-- React Markdown
-- Lucide React
-- FastAPI
-- Python
-- Google Gemini API (`google-generativeai`)
-- `python-dotenv`
+-   **Notes** -- create, view, edit, and delete personal notes
+-   **Quiz** -- generate and practice quizzes
+-   **Flashcards** -- quick revision using question-and-answer cards
+-   **Study Planner** -- organize study sessions
+-   **Interview Prep** -- prepare interview questions
+-   **Code Assistant** -- coding assistance, explanations, and debugging
+-   **File Analyzer** -- work with study/code files
+-   **Weak Topics** -- identify areas that need more practice
+-   **Study Analytics** -- view learning activity and progress
+    information
 
-## System Architecture
+### Settings
 
-```text
-React Frontend → FastAPI Backend → Google Gemini API
+-   Edit profile information
+-   Profile name and initials synchronization
+-   Theme preferences
+-   AI response preferences
+-   Notification preferences
+
+## Application Flow
+
+``` text
+Student
+   ↓
+React Web Interface
+   ↓
+AI Chat / Study Tools
+   ↓
+FastAPI Backend
+   ↓
+AI Service
+   ↓
+AI Response
+   ↓
+React Interface
 ```
 
-The React app calls the FastAPI endpoints using `VITE_API_URL`. The backend loads `GEMINI_API_KEY` from its local environment and uses the shared Gemini service in `backend/services/ai_service.py`.
+AI Chat is the main/default page of the application. There is no
+separate Home dashboard.
+
+## Technology Stack
+
+### Frontend
+
+-   React
+-   Vite
+-   JavaScript
+-   Tailwind CSS
+-   React Router
+-   Lucide React
+
+### Backend
+
+-   Python
+-   FastAPI
+-   Uvicorn
+-   python-dotenv
+
+### AI
+
+-   Google Gemini API
+-   AI service handled on the backend
 
 ## Project Structure
 
-```text
-.
+``` text
+AI-Study-Assistant/
+│
 ├── backend/
+│   ├── services/
+│   │   └── ai_service.py
 │   ├── app.py
 │   ├── requirements.txt
-│   ├── .env.example
-│   └── services/
-│       └── ai_service.py
+│   └── .env.example
+│
 ├── src/
 │   ├── components/
-│   │   ├── ChatInput.jsx
-│   │   ├── ChatMessage.jsx
-│   │   ├── Shared.jsx
-│   │   └── Sidebar.jsx
 │   ├── pages/
-│   │   ├── Chat.jsx
-│   │   └── Pages.jsx
 │   ├── services/
 │   │   └── api.js
-│   ├── App.jsx
-│   ├── index.css
-│   └── main.jsx
-├── .env.example
-├── index.html
+│   └── App.jsx
+│
+├── main.py
 ├── package.json
+├── package-lock.json
+├── tailwind.config.js
+├── postcss.config.js
+├── index.html
 ├── requirements.txt
-└── main.py
+├── sample_notes.txt
+├── .env.example
+├── .gitignore
+└── README.md
 ```
 
-The root `main.py` is a retained command-line interface; the web application uses the FastAPI backend.
+## Requirements
 
-## Setup Instructions
+Before running the project, install:
 
-Use two terminals from the project root.
+-   Python 3.13+ (or the Python version required by the current backend
+    environment)
+-   Node.js and npm
+-   A Google Gemini API key for AI functionality
 
-**Backend** (first terminal):
+## Installation
 
-```bash
+### 1. Clone the repository
+
+``` bash
+git clone https://github.com/vatsalyavatsgotri/AI-Study-Assistant.git
+cd AI-Study-Assistant
+```
+
+### 2. Install frontend dependencies
+
+From the project root:
+
+``` bash
+npm install
+```
+
+### 3. Install backend dependencies
+
+``` bash
 cd backend
 python -m pip install -r requirements.txt
 ```
 
-Create `backend/.env` locally using `backend/.env.example` as a template, set `GEMINI_API_KEY` to your own key, then start FastAPI:
+## Environment Configuration
 
-```bash
+### Backend
+
+Create:
+
+``` text
+backend/.env
+```
+
+Add your Gemini API key:
+
+``` env
+GEMINI_API_KEY=YOUR_GEMINI_API_KEY
+```
+
+Never commit the real API key to GitHub.
+
+### Frontend
+
+Create a root `.env` file if it does not already exist:
+
+``` env
+VITE_API_URL=http://127.0.0.1:8000
+```
+
+The frontend uses this value to communicate with the FastAPI backend.
+
+## Run the Application
+
+You need two terminals for local development.
+
+### Terminal 1 -- Backend
+
+From the project root:
+
+``` bash
+cd backend
 python -m uvicorn app:app --reload --port 8000
 ```
 
-**Frontend** (second terminal, from the project root):
+Backend:
 
-```bash
-npm install
+``` text
+http://127.0.0.1:8000
+```
+
+### Terminal 2 -- Frontend
+
+From the project root:
+
+``` bash
 npm run dev
 ```
 
-The frontend development server uses Vite's default port `5173`. The backend defaults to port `8000`.
+The Vite development server will display the local frontend URL in the
+terminal, normally:
 
-## Environment Variables
+``` text
+http://localhost:5173
+```
 
-| Variable | Location | Purpose |
-| --- | --- | --- |
-| `VITE_API_URL` | Root `.env` | FastAPI base URL. The development default is `http://127.0.0.1:8000`. |
-| `GEMINI_API_KEY` | `backend/.env` | Server-side credential used by the Gemini service. Never put this in a frontend environment variable. |
-| `CORS_ORIGINS` | `backend/.env` (optional) | Comma-separated frontend origins allowed by FastAPI. Defaults to the local Vite origins. |
+Open the frontend URL in your browser.
 
-Use the root `.env.example` for the frontend URL and `backend/.env.example` for backend settings. Keep actual `.env` files local and out of version control. Never use `VITE_GEMINI_API_KEY`.
+## API Configuration
 
-## API Features
+The frontend API client is located at:
 
-All endpoints below use `POST` and accept JSON unless noted. Successful text responses use the endpoint-specific fields shown below.
+``` text
+src/services/api.js
+```
 
-| Endpoint | Purpose | Response field |
-| --- | --- | --- |
-| `/api/chat` | Answer a study question with conversation history | `reply` |
-| `/api/explain-code` | Explain submitted code | `reply` |
-| `/api/debug` | Explain an error and suggest a fix | `reply` |
-| `/api/generate-code` | Generate code from a prompt | `reply` |
-| `/api/summarize` | Summarize study notes | `reply` |
-| `/api/quiz` | Generate quiz questions from notes | `quiz` |
-| `/api/flashcards` | Generate flashcards from notes | `flashcards` |
-| `/api/study-plan` | Generate a study plan | `plan` |
-| `/api/weak-topics` | Identify topics to review | `analysis` |
-| `/api/interview` | Generate interview questions for a subject | `questions` |
-| `/api/analyze-file` | Upload and analyze a supported text file (`multipart/form-data`) | `filename`, `content`, `analysis` |
+The API base URL is controlled through:
 
-`GET /api/health` reports backend status and whether the server has a Gemini key configured. It never returns the key.
+``` env
+VITE_API_URL=http://127.0.0.1:8000
+```
 
-## Security Notes
+The Gemini API key stays on the backend and should never be placed in
+React/Vite client-side code.
 
-- Keep `GEMINI_API_KEY` in `backend/.env`; the browser must never receive it.
-- Do not define `VITE_GEMINI_API_KEY`.
-- Do not commit `.env` files. Commit only the placeholder `.env.example` files.
-- The file analyzer accepts only `.txt`, `.py`, `.md`, and `.csv` UTF-8 files, with a 2 MB size limit. Uploaded file paths are not exposed to the frontend.
+## Notes and Local Data
+
+Some user-specific interface data can be stored locally when a backend
+database is not yet connected.
+
+This may include items such as: - Personal notes - Profile preferences -
+Local application settings
+
+Local browser storage is device/browser-specific. It should not be
+treated as cloud synchronization between devices.
+
+## Security
+
+-   Never commit `.env` files containing secrets.
+-   Never expose `GEMINI_API_KEY` in frontend code.
+-   Keep AI credentials on the backend.
+-   Use `.env.example` files for configuration templates.
+-   Review `.gitignore` before pushing changes to GitHub.
+
+## Production Deployment
+
+For a public deployment, the frontend and backend must both be hosted.
+
+A typical architecture is:
+
+``` text
+Public Website
+      ↓
+React/Vite Frontend
+      ↓
+Hosted FastAPI Backend
+      ↓
+Gemini API
+```
+
+For production:
+
+1.  Deploy the frontend to a web hosting platform.
+2.  Deploy the FastAPI backend to a server/cloud platform.
+3.  Add `GEMINI_API_KEY` to the backend's environment variables.
+4.  Change `VITE_API_URL` to the deployed backend URL.
+5.  Configure FastAPI CORS to allow the deployed frontend domain.
+6.  Never put the Gemini API key in the frontend.
+
+## Current Development Status
+
+The project currently provides a web-based AI Study Assistant interface
+with AI Chat and multiple study tools.
+
+Some advanced functionality, such as fully database-backed user accounts
+and production-grade analytics, can be expanded as the project develops.
+
+The application should not be considered production-ready until
+authentication, persistent cloud storage, deployment configuration,
+security hardening, and complete real-user analytics are implemented and
+tested.
 
 ## Future Improvements
 
-- Add persistent storage for notes, chat history, study plans, and analytics.
-- Add PDF and other document extraction support.
-- Add automated backend and frontend integration tests.
-- Add production deployment configuration and monitoring.
+Possible future improvements include:
+
+-   Real user authentication
+-   Cloud/database-backed notes and user data
+-   Real study analytics based on actual user activity
+-   PDF and document understanding
+-   Voice-based learning assistant
+-   Text-to-speech
+-   Multilingual learning support
+-   Mobile application
+-   Production deployment
+-   Advanced personalization
 
 ## Author
 
-Developed by Vatsalya.
+**Vatsalya Vatsgotri**
 
-[GitHub](https://github.com/vatsalyavatsgotri)
+GitHub:
+
+https://github.com/vatsalyavatsgotri
+
+Repository:
+
+https://github.com/vatsalyavatsgotri/AI-Study-Assistant
+
+------------------------------------------------------------------------
+
+⭐ If you find this project useful, consider giving it a star on GitHub.
