@@ -1,0 +1,7 @@
+Python is a high-level programming language.
+
+Functions are reusable blocks of code.
+
+Lists store multiple values.
+
+Loops help repeat tasks.
