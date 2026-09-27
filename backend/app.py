@@ -16,20 +16,20 @@ except ImportError:
 
 
 app = FastAPI(title="AI Study Assistant API", version="1.0.0")
+
 origins = [
-    origin.strip()
-    for origin in os.getenv(
-        "CORS_ORIGINS",
-        "http://localhost:5173,http://127.0.0.1:5173",
-    ).split(",")
-    if origin.strip()
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
 ]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST"],
-    allow_headers=["Content-Type", "Authorization"],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -65,6 +65,15 @@ class CountedNotesRequest(NotesRequest):
     count: int = Field(default=5, ge=1, le=50)
 
 
+class QuizRequest(BaseModel):
+    notes: str = Field(default="", max_length=50000)
+    subject: str = Field(min_length=1, max_length=300)
+    topic: str = Field(min_length=1, max_length=500)
+    difficulty: str = Field(default="Medium", pattern="^(Easy|Medium|Hard)$")
+    count: int = Field(default=5, ge=1, le=30)
+    question_type: str = Field(default="MCQ", pattern="^(MCQ|True/False|Mixed)$")
+
+
 class FlashcardRequest(NotesRequest):
     count: int = Field(default=10, ge=1, le=50)
 
@@ -89,6 +98,8 @@ def run_ai(operation, *args):
         return operation(*args)
     except ai_service.AIConfigurationError as error:
         raise HTTPException(status_code=503, detail="AI service is not configured on the server.") from error
+    except ai_service.AIQuotaError as error:
+        raise HTTPException(status_code=429, detail=str(error)) from error
     except ai_service.AIServiceError as error:
         raise HTTPException(status_code=502, detail=str(error)) from error
     except Exception as error:
@@ -99,7 +110,7 @@ def run_ai(operation, *args):
 async def health() -> dict[str, str | bool]:
     return {
         "status": "ok",
-        "gemini_api_key_configured": ai_service.gemini_key_configured(),
+        "local_ai": ai_service.ollama_available(),
     }
 
 
@@ -130,8 +141,18 @@ async def summarize(payload: NotesRequest) -> dict[str, str]:
 
 
 @app.post("/api/quiz")
-async def quiz(payload: CountedNotesRequest) -> dict[str, list[dict[str, Any]]]:
-    return {"quiz": run_ai(ai_service.generate_quiz, payload.notes, payload.count)}
+async def quiz(payload: QuizRequest) -> dict[str, list[dict[str, Any]]]:
+    return {
+        "quiz": run_ai(
+            ai_service.generate_quiz,
+            payload.notes,
+            payload.count,
+            payload.subject,
+            payload.topic,
+            payload.difficulty,
+            payload.question_type,
+        )
+    }
 
 
 @app.post("/api/flashcards")
